@@ -9,36 +9,55 @@ using UnityEngine.EventSystems;
 
 public class MovementController : MonoBehaviour , IPunObservable
 {
+    //Char Movement
     private CharacterController controller;
     private PhotonView pv;
-    public Vector3 moveDir;
+    public bool isG = true;
+    private Vector3 moveDir;
 
 
+    bool IsknockBack;
+
+    [Space(10f)]
+    [Header("CanSwitchValue")]
     public float PlayerSpeed = 5;
     public float JumpPower = 10f;
-    public float damping = 10.0f;
+    public float gravity = 9.8f;
+    [Space(10f)]
+    [Header("Detect Floor Ray Setting")]
+    public Transform Ground;
+    public float RayLine = 0.1f;
 
-    float v => Input.GetAxis("Vertical");
-    float h => Input.GetAxis("Horizontal");
+    float damping = 1.0f;
+    private float Yaxis;
+    private float v => Input.GetAxis("Vertical");       //InputManager
+    private float h => Input.GetAxis("Horizontal");
 
-    private Vector3 receivePos;
+    private Vector3 receivePos;     //Photon only
     private Quaternion receiveRot;
 
-    private int CharC; 
     void Start()
     {
         controller = GetComponent<CharacterController>();
 
         pv = GetComponent<PhotonView>();
         moveDir = Vector3.zero;
+
+        Yaxis = 1;
     }
 
 
     void Update()
     {
-        if (pv.IsMine)
+        if (pv.IsMine)      //로컬이면 움직임, 아니면 위치 설정하기
         {
-            MovingMan();
+            if (!IsknockBack)
+            {//움직이는 사람이 KnockBack상태인지 아닌지
+                MovingMan();
+            Attack();
+            }
+        else
+            Debug.Log("U R knockBacked! U can't Move");
         }
         else
         {
@@ -49,7 +68,7 @@ public class MovementController : MonoBehaviour , IPunObservable
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
-        if(stream.IsWriting)
+        if(stream.IsWriting)        //로컬이 맞으면 수신, 아님녀 송신
         {
             stream.SendNext(transform.position);
             stream.SendNext(transform.rotation);
@@ -63,39 +82,86 @@ public class MovementController : MonoBehaviour , IPunObservable
 
     void MovingMan()
     {
-        if(controller.isGrounded)
+        OnGround();
+        Vector3 cameraForward = Camera.main.transform.forward;
+        Vector3 cameraRight = Camera.main.transform.right;
+
+        cameraForward.y = 0.0f;
+        cameraRight.y = 0.0f;
+
+        moveDir = (cameraForward * v) + (cameraRight * h);
+        moveDir = new Vector3(moveDir.x, 0, moveDir.z);
+
+        if (moveDir != Vector3.zero)        //움직일때마다 각도가 변경
         {
-            Vector3 cameraForward = Camera.main.transform.forward;
-            Vector3 cameraRight = Camera.main.transform.right;
+            transform.rotation = Quaternion.Euler(0, Mathf.Atan2(h, v) * Mathf.Rad2Deg, 0);
+        }
 
-            cameraForward.y = 0.0f;
-            cameraRight.y = 0.0f;
-
-            //카메라에 따른 이동 방향 설정
-            moveDir = (cameraForward * v) + (cameraRight * h);
-
-            moveDir = new Vector3(moveDir.x, 0, moveDir.z);
-
-            //angler
-            if (moveDir != Vector3.zero)
+        if (isG)            //Charactor Controller의 isGround는 매우 똥이였습니다.
+        {
+            Yaxis = 0;
+            if (Input.GetKeyDown(KeyCode.Space))
             {
-                transform.rotation = Quaternion.Euler(0, Mathf.Atan2(h, v) * Mathf.Rad2Deg, 0);
-            }
-            moveDir *= PlayerSpeed * damping;
-
-            Debug.Log("UcanJump");
-            if (Input.GetKeyDown(KeyCode.Space))     //SampleCode--
-            {
-                moveDir.y += JumpPower;
-                Debug.Log("Jump");
+                Yaxis += JumpPower;
             }
         }
-        moveDir.y += Physics.gravity.y * Time.deltaTime;
-        controller.Move(moveDir * Time.deltaTime);
+        else
+        {
+            Yaxis -= gravity * Time.deltaTime;
+        }
+        
 
-
-
+        controller.Move((PlayerSpeed * Time.deltaTime * moveDir) + (Time.deltaTime * Yaxis * Vector3.up));      //움직임
 
     }
 
+
+    void PushungSaRaRak()          //순보
+    {
+        if(Input.GetKeyDown(KeyCode.LeftShift))
+        {
+
+        }
+    }
+
+    void Attack()       //공통적인 공격은 Movement에서, 전용 기술은 CharactorSkill에서 다룹니다
+    {                   //하지만, 키감지를 통한 공격 설정은 이 스크립트에서 합니다.
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            if (!isG)
+            {
+
+            }
+            else
+            {
+
+            }
+        }
+        else if (Input.GetKeyDown(KeyCode.D))
+        {
+            this.GetComponent<CharactorSkill>().UseSkill();
+        }
+        else
+        {
+            Debug.Log("U can't use Skill.");
+        }
+    }
+
+    #region A
+    void OnGround()
+    {
+        int layerMask = (-1) - (1 << LayerMask.NameToLayer("Player"));
+        RaycastHit hit;
+
+        Debug.DrawRay(Ground.position, -transform.up, Color.red, RayLine);      //sphereTrack으로 교체 예정
+        if (Physics.Raycast(Ground.position, -transform.up, out hit, RayLine))
+        {
+            isG = true;
+        }
+        else
+        {
+            isG = false;
+        }
+    }
+    #endregion
 }

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using Photon.Pun;
 using Photon.Realtime;
 using TMPro;
@@ -49,7 +50,7 @@ public class MultiplayerSystem : MonoBehaviourPunCallbacks //PUNÀÇ ´Ù¾çÇÑ ÄÝ¹é Ç
     void Start()
     {
         // ÀúÀåµÈ À¯Àú¸íÀ» ·Îµå
-        userId = PlayerPrefs.GetString("USER_ID", $"USER_{Random.Range(1, 21):00}");
+        userId = PlayerPrefs.GetString("USER_ID", $"USER_{Random.Range(1, 100):00}");
         userIF.text = userId;
 
         // Á¢¼Ó À¯ÀúÀÇ ´Ð³×ÀÓ µî·Ï
@@ -64,7 +65,7 @@ public class MultiplayerSystem : MonoBehaviourPunCallbacks //PUNÀÇ ´Ù¾çÇÑ ÄÝ¹é Ç
             ToggleValueChanged(m_Toggle);
         }
         );
-        toggleColor.color = new Color(1, 0, 0, 1);
+        toggleColor.color = new Color(0, 1, 0, 1);
     }
 
     // À¯Àú¸íÀ» ¼³Á¤ÇÏ´Â ·ÎÁ÷
@@ -72,13 +73,22 @@ public class MultiplayerSystem : MonoBehaviourPunCallbacks //PUNÀÇ ´Ù¾çÇÑ ÄÝ¹é Ç
     {
         if (string.IsNullOrEmpty(userIF.text))
         {
-            userId = $"USER_{Random.Range(1, 21):00}";
+            userId = $"USER_{Random.Range(1, 100):00}";
         }
         else
         {
             if (userIF.text.Length <= 10)
             {
                 userId = userIF.text;
+
+                
+                // À¯Àú¸í ÀúÀå
+                PlayerPrefs.SetString("USER_ID", userId);
+
+                // Á¢¼Ó À¯ÀúÀÇ ´Ð³×ÀÓ µî·Ï
+                PhotonNetwork.NickName = userId;
+
+                namePanel.SetActive(false);
             }
             else
             {
@@ -88,11 +98,6 @@ public class MultiplayerSystem : MonoBehaviourPunCallbacks //PUNÀÇ ´Ù¾çÇÑ ÄÝ¹é Ç
             
         }
 
-        // À¯Àú¸í ÀúÀå
-        PlayerPrefs.SetString("USER_ID", userId);
-
-        // Á¢¼Ó À¯ÀúÀÇ ´Ð³×ÀÓ µî·Ï
-        PhotonNetwork.NickName = userId;
     }
 
 
@@ -152,13 +157,13 @@ public class MultiplayerSystem : MonoBehaviourPunCallbacks //PUNÀÇ ´Ù¾çÇÑ ÄÝ¹é Ç
     {
         if (m_Toggle.isOn)
         {
-            toggleColor.color = new Color(0, 1, 0, 1);
+            toggleColor.color = new Color(1, 0, 0, 1);
             Debug.Log("True");
             MatchMacking();
         }
         else
         {
-            toggleColor.color = new Color(1, 0, 0, 1);
+            toggleColor.color = new Color(0, 1, 0, 1);
             Debug.Log("False");
         }
     }
@@ -174,7 +179,6 @@ public class MultiplayerSystem : MonoBehaviourPunCallbacks //PUNÀÇ ´Ù¾çÇÑ ÄÝ¹é Ç
     public void SetNickName()
     {
         SetUserId();
-        namePanel.SetActive(false);
     }
 
     public void OnMakeRoomClick()
@@ -185,19 +189,26 @@ public class MultiplayerSystem : MonoBehaviourPunCallbacks //PUNÀÇ ´Ù¾çÇÑ ÄÝ¹é Ç
         // ·ëÀÇ ¼Ó¼º Á¤ÀÇ
         RoomOptions ro = new RoomOptions
         {
-            MaxPlayers = 20,     // ·ë¿¡ ÀÔÀåÇÒ ¼ö ÀÖ´Â ÃÖ´ë Á¢¼ÓÀÚ ¼ö
+            MaxPlayers = 4,     // ·ë¿¡ ÀÔÀåÇÒ ¼ö ÀÖ´Â ÃÖ´ë Á¢¼ÓÀÚ ¼ö
             IsOpen = true,       // ·ëÀÇ ¿ÀÇÂ ¿©ºÎ
             IsVisible = true    // ·Îºñ¿¡¼­ ·ë ¸ñ·Ï¿¡ ³ëÃâ½ÃÅ³ ¿©ºÎ
         };
 
         // ·ë »ý¼º
-        PhotonNetwork.CreateRoom(Random.Range(1,210000000)+("apple"), ro);
+        PhotonNetwork.CreateRoom(Random.Range(-210000000,210000000)+("apple"), ro);
     }
 
     public void MatchMacking()
     {
         PhotonNetwork.JoinRandomRoom();
 
+    }
+
+    //---------Will Be Removed-------------//
+
+    public void StartButton()
+    {
+        SceneManager.LoadScene("GamePlay");
     }
 
     #endregion
