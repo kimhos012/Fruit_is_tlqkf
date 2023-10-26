@@ -16,6 +16,12 @@ public class Damage : MonoBehaviour
     // 애니메이터 뷰에 생성한 파라미터의 해시값 추출
     private readonly int hashDie = Animator.StringToHash("Die");
     private readonly int hashRespawn = Animator.StringToHash("Respawn");
+
+    //데미지설정값을 위한 설정
+    float _curTime;
+    int Dam;
+    int DC;
+
     void Awake()
     {
         // 캐릭터 모델의 모든 Renderer 컴포넌트를 추출한 후 배열에 할당
@@ -27,19 +33,78 @@ public class Damage : MonoBehaviour
     }
     void OnCollisionEnter(Collision coll)
     {
-        // 생명 수치가 0보다 크고 충돌체의 태그가 BULLET인 경우에 생명 수치를 차감
-        if (yourHp > 0 && coll.collider.CompareTag("Hitpoint"))
+        
+        if (yourHp > 0 && coll.collider.CompareTag("DamageObject"))
         {
-            
+            Dam = coll.gameObject.GetComponent<DamageProjectile>().Damage;
+
+            switch (coll.gameObject.GetComponent<DamageProjectile>().damageType)
+            {
+                case Damtype.Instant:
+                    //오브젝트에게 있는 데미지를 호로록감지해서 체력이 아야함
+                    yourHp -= Dam;
+                    break;
+                case Damtype.InstantDeath:
+                    StartCoroutine("Sine");
+
+                    break;
+            }
             //오브젝트에게 있는 데미지를 호로록감지해서 체력이 아야함
             yourHp -= coll.gameObject.GetComponent<DamageProjectile>().Damage;
+        }
+        if (yourHp <= 0)
+        {
+            StartCoroutine(Sine());
+        }
+    }
+    private void OnTriggerStay(Collider other)     //도트딜은 Trigger
+    {
+        if(yourHp > 0 && other.CompareTag("DamageObject"))
+        {
+            DC = other.gameObject.GetComponent<DamageProjectile>().dotCount;
 
+            if(DC == 0)     //Detect EffectArea
+            {
+                if (_curTime >= 1)
+                {
+                    _curTime += Time.deltaTime;
+                }
+                else
+                {
+                    _curTime = 0;
+                    yourHp -= Dam;
+                }
+            }
+            else
+            {
+                StartCoroutine("DotDamageSys");
+            }
+        }
+        if (yourHp <= 0)
+        {
+            if(!dotIsStarted)
+                StartCoroutine(Sine());
+        }
+    }
+    bool dotIsStarted;
+
+    IEnumerator DotDamageSys()      //코루틴으로 분리한 이유는 저거가 TriggerStay라서
+    {
+        dotIsStarted = true;
+        var _wait = new WaitForSeconds(1f);
+        
+        for (int a = 0; a > DC; a++)        //횟수만큼 피해
+        {
+            yourHp -= Dam;
             if (yourHp <= 0)
             {
                 StartCoroutine(Sine());
             }
+            yield return _wait;
         }
+        yield return null;
     }
+
     IEnumerator Sine()
     {
         // CharacterController 컴포넌트 비활성화

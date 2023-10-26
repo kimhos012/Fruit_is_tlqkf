@@ -143,7 +143,7 @@ public class MovementController : MonoBehaviour , IPunObservable
         }
         else
         {
-            Debug.Log("U can't use Skill.");
+            Debug.Log("U can use Skill.");
         }
     }
 

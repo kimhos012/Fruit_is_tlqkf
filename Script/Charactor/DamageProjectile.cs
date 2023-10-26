@@ -10,13 +10,13 @@ public class DamageProjectile : MonoBehaviour
     [Space(10f)]
 
     [Header("Main Damage")]
-    [Tooltip("초당 데미지면 초당 이 피해만큼 들어갑니다.")]
+    [Tooltip("피해량입니다.")]
     [Range(0,120)]
     public int Damage;
-    [Header("First Dam")]
-    [Tooltip("도트 데미지일 경우, 이 값을 설정 시, 타격 시 데미지가 들어갑니다.")]
-    [Range(0, 120)]
-    public int dotFirstDam;
+    [Header("Damage Count")]
+    [Tooltip("도트 데미지일 경우, 이 값을 설정 시, 타격 횟수가 숫자만큼 적용됩니다. 0은 들어가 있을때만 작동합니다.")]
+    [Range(-1, 120)]
+    public int dotCount;
 
     [Space(10f)]
 

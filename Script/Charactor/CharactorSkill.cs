@@ -5,7 +5,11 @@ using UnityEngine;
 
 public class CharactorSkill : MonoBehaviour
 {
+    public GameObject ShootPos;
+    Vector3 SPos_transform;
+    Quaternion SPos_rotation;
 
+    [Space(10f)]
     public CharType charactorType;
     [Space(10f)]
     public GameObject Char1;
@@ -24,6 +28,10 @@ public class CharactorSkill : MonoBehaviour
 
     private void Start()
     {
+        SPos_transform = ShootPos.GetComponent<Transform>().position;
+        SPos_rotation = ShootPos.GetComponent<Transform>().rotation;
+
+
         Char1.SetActive(false);
         Char2.SetActive(false);
         Char3.SetActive(false);
@@ -43,7 +51,7 @@ public class CharactorSkill : MonoBehaviour
                 GrapeSkill();
                 break;
             case CharType.체리:
-                CherrySkill();
+                CherrySkill(SPos_rotation.y);
 
                 break;
             case CharType.귤:
@@ -166,31 +174,31 @@ public class CharactorSkill : MonoBehaviour
     #region 캐릭터에서 스킬을 발사하는,
     void GrapeSkill()
     {
-        PhotonNetwork.Instantiate("GrapeBomb", transform.position, transform.rotation, 0);
+        PhotonNetwork.Instantiate("GrapeBomb", SPos_transform, SPos_rotation, 0);
     }
 
-    void CherrySkill()
+    void CherrySkill(float cherryRot)
     {
-
+        PhotonNetwork.Instantiate("CherrySureken(Box)", SPos_transform, SPos_rotation, 0);
     }
 
     void MandarinSkill()
     {
-
+        PhotonNetwork.Instantiate("MandarinProjectile(Sphere)", SPos_transform, SPos_rotation, 0);
     }
 
-    void OnionSkill()
-    {
+    void OnionSkill()       //이 2개의 스킬은 플레이어를 따라가기 때문에 Player안에 존재함
+    {                       //따라서 SetActive으로 조절
 
     }
     void PepperSkill()
     {
-
+        
     }
 
     void SweetpotatoSkill()
     {
-
+        PhotonNetwork.Instantiate("", SPos_transform, SPos_rotation, 0);        //None
     }
     #endregion
 }
