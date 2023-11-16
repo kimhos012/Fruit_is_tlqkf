@@ -1,40 +1,65 @@
+using Photon.Pun;
 using System.Collections;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Security.Cryptography;
-using System.Xml.Serialization;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class RandomSelect : MonoBehaviour
 {
     public string[] mapList = { "NamB", "BooAuk", "SinkDeah" };
-    public RectTransform selectimage;
+    public GameObject selectimage;
     [Space(10f)]
     public GameObject[] mapPos;
-    float Xpos;
+    Vector3 Xpos;
+    public float min;
+    public float max;
+
+    bool select;
+    int mapNum;
+    [Space(10f)]
+    public GameObject zoomMap;
 
     private void Start()
     {
-        Debug.Log(mapList[0]);
+        select = false;
+
+        zoomMap.SetActive(false);
+
         StartCoroutine(SelectRandom());
-        Xpos = selectimage.anchoredPosition.x;
-        Debug.Log(Xpos);
+        Invoke("Pick", Random.Range(min, max));
     }
 
     IEnumerator SelectRandom()
     {
-        var wait = new WaitForSeconds(1f);
-        while (true)
+        int i = 0;
+        var wait = new WaitForSeconds(0.2f);
+        while (!select)
         {
-            Debug.Log("ChangePos");
-            for (int i = 0; i < mapPos.Length; i++)
+            if (i< mapList.Length)
             {
-                Xpos = selectimage.GetComponent<RectTransform>().anchoredPosition.x; = mapPos[i].GetComponent<RectTransform>().anchoredPosition.x;
-                yield return wait;
+                selectimage.GetComponent<RectTransform>().anchoredPosition = mapPos[i].GetComponent<RectTransform>().anchoredPosition;
+                i++;
+            }
+            else
+            {
+                i = 0;
+                selectimage.GetComponent<RectTransform>().anchoredPosition = mapPos[i].GetComponent<RectTransform>().anchoredPosition;
             }
             yield return wait;
         }
+        Invoke("SelectMap", 2f);
+        yield return null;
+    }
+    void Pick() => select = true;
+    void SelectMap()
+    {
+        Debug.Log(mapNum);
+
+        zoomMap.SetActive(true);
+        Invoke("ChangeMap", 3f);
+    }
+    void ChangeMap()
+    {
+        string map;
+        map = mapList[mapNum + 1];
+        PhotonNetwork.LoadLevel(map);
     }
 }

@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class Timer : MonoBehaviourPunCallbacks
 {
 
-    public int maxTime;
+    public float maxTime;
     float curTime = 0;
 
     public Image timerimage;
@@ -44,7 +44,7 @@ public class Timer : MonoBehaviourPunCallbacks
             yield break;
         }
 
-        PV.RPC("ShowTimer", RpcTarget.All, curTime); //1초 마다 방 모두에게 전달
+        PV.RPC("ShowTimer", RpcTarget.All, curTime); //Send
 
         yield return new WaitForSeconds(0.1f);
         StartCoroutine(TimerCoroution());
@@ -57,7 +57,7 @@ public class Timer : MonoBehaviourPunCallbacks
 
 
     [PunRPC]
-    void ShowTimer(int number)
+    void ShowTimer(float showP)
     {
         timerimage.fillAmount = (float)curTime / maxTime;
     }

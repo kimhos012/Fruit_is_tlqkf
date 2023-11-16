@@ -70,7 +70,7 @@ public class IngameUiUpdate : MonoBehaviour
         //Connect 2 Player
         hpPer = Player.GetComponent<Damage>().hpPers;
         cooldown = Player.GetComponent<CharactorSkill>().cooldownPer;
-        name = Player.GetComponent<PhotonView>().Controller.NickName.ToString();
+        name = Player.GetComponent<PlayerValue>().NickName;
         score = Player.GetComponent<PlayerValue>().mapScore.ToString();
         playerChar = Player.GetComponent<CharactorSkill>().charactorType.ToString();
 

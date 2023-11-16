@@ -2,7 +2,6 @@ using UnityEngine.SceneManagement;
 using UnityEngine;
 using Photon.Pun;
 using UnityEngine.EventSystems;
-using UnityEngine.Rendering.Universal.Internal;
 
 public class MovementController : MonoBehaviour , IPunObservable
 {

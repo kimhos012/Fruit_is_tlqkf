@@ -87,7 +87,8 @@ public class Damage : MonoBehaviour
             }
             else
             {
-                StartCoroutine("DotDamageSys");
+                if(!dotIsStarted)
+                    StartCoroutine("DotDamageSys");
             }
         }
         if (yourHp <= 0)

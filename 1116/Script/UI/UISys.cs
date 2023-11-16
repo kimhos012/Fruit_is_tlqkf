@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -50,6 +51,10 @@ public class UISys : MonoBehaviour
     public void OptionToggle(bool Yes)
     {
         Option.SetActive(Yes);
+    }
+    public void Exit()
+    {
+        Application.Quit();
     }
     #endregion
 }

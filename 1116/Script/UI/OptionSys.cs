@@ -6,6 +6,7 @@ using UnityEngine.PlayerLoop;
 public class OptionSys : MonoBehaviour
 {
     public GameObject[] OptionNum;
+    public GameObject[] OptionButton;
     int maxLength;
     void Start()
     {

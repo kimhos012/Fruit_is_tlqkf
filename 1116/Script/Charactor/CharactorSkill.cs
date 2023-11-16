@@ -18,15 +18,10 @@ public class CharactorSkill : MonoBehaviour , IPunObservable
     [HideInInspector]
     public string charactorTypetoString;
     [Space(10f)]
-    [SerializeField] GameObject Char1;
-    [SerializeField] GameObject Char2;
-    [SerializeField] GameObject Char3;
-    [SerializeField] GameObject Char4;
-    [SerializeField] GameObject Char5;
-    [SerializeField] GameObject Char6;
+    [SerializeField] GameObject[] Char;
 
     [Space(10f)]
-
+    #region Skill
     private int skillCooldown;       //쿨다운 설정하는 값
     public float Cooldown;           //변경되는 쿨다운 값
     [HideInInspector]
@@ -42,18 +37,12 @@ public class CharactorSkill : MonoBehaviour , IPunObservable
     [SerializeField] GameObject OnionArea;
     [SerializeField] GameObject PepperArea;
     [SerializeField] GameObject SweetpotatoBind;
-
+    #endregion
 
     private void Start()
     {
-        Char1.SetActive(false);
-        Char2.SetActive(false);
-        Char3.SetActive(false);
-        Char4.SetActive(false);
-        Char5.SetActive(false);
-        Char6.SetActive(false);
+        for (int i = 0; i < Char.Length; i++) { Char[i].SetActive(false); }
         pv = GetComponent<PhotonView>();
-
     }
 
     public void UseSkill()
@@ -109,59 +98,28 @@ public class CharactorSkill : MonoBehaviour , IPunObservable
         switch(charactorType)
         {
             case CharType.포도:
-                Char1.SetActive(true);
-                Char2.SetActive(false);
-                Char3.SetActive(false);
-                Char4.SetActive(false);
-                Char5.SetActive(false);
-                Char6.SetActive(false);
+                Char[0].SetActive(true);
                 break;
 
             case CharType.체리:
-                Char1.SetActive(false);
-                Char2.SetActive(true);
-                Char3.SetActive(false);
-                Char4.SetActive(false);
-                Char5.SetActive(false);
-                Char6.SetActive(false);
+                Char[1].SetActive(true);
                 break;
 
             case CharType.양파:
-                Char1.SetActive(false);
-                Char2.SetActive(false);
-                Char3.SetActive(true);
-                Char4.SetActive(false);
-                Char5.SetActive(false);
-                Char6.SetActive(false);
+                Char[2].SetActive(true);
                 break;
 
             case CharType.귤:
-                Char1.SetActive(false);
-                Char2.SetActive(false);
-                Char3.SetActive(false);
-                Char4.SetActive(true);
-                Char5.SetActive(false);
-                Char6.SetActive(false);
+                Char[3].SetActive(true);
                 break;
 
             case CharType.고추:
-                Char1.SetActive(false);
-                Char2.SetActive(false);
-                Char3.SetActive(false);
-                Char4.SetActive(false);
-                Char5.SetActive(true);
-                Char6.SetActive(false);
+                Char[4].SetActive(true);
                 break;
 
             case CharType.고구마:
-                Char1.SetActive(false);
-                Char2.SetActive(false);
-                Char3.SetActive(false);
-                Char4.SetActive(false);
-                Char5.SetActive(false);
-                Char6.SetActive(true);
+                Char[5].SetActive(true);
                 break;
-            
         }
     }
 
@@ -197,9 +155,15 @@ public class CharactorSkill : MonoBehaviour , IPunObservable
         }
     }
 
-
+    CharType ch;
     private void Update()
     {
+        
+        if (ch != charactorType)
+        {
+            for (int i = 0; i < Char.Length; i++) { Char[i].SetActive(false); }
+            ch = charactorType;
+        } 
         CheckSkillC();
         pv.RPC("CheckSkillC", RpcTarget.Others, null);
 
@@ -208,7 +172,6 @@ public class CharactorSkill : MonoBehaviour , IPunObservable
 
         if (pv.IsMine)
         {
-            CheckMesh();        //자신 모습을 변경
             if (Cooldown >= 0)
             {
                 Cooldown -= Time.deltaTime;
