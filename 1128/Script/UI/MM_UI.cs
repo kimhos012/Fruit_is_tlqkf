@@ -10,6 +10,7 @@ public class MM_UI : MonoBehaviour
     public Text UpperText;
     public GameObject Timer;
     public int Time;
+    //public GameObject rrrsss;
 
     RandomSelect RS;
     [Space(10f)]
@@ -84,6 +85,7 @@ public class MM_UI : MonoBehaviour
         else
         {
             Debug.Log("타이머 종료");
+            //rrrsss.SetActive(true);
             RS.Pick();
             yield break;
         }

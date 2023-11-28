@@ -23,7 +23,18 @@ public class RandomSelect : MonoBehaviour
         pv = GetComponent<PhotonView>();
         randomSelectDisplay.SetActive(false);
     }
-    public void Pick() => pv.RPC("RandomPick", RpcTarget.AllBuffered);
+    public void Pick()
+    {
+        if (PhotonNetwork.CurrentRoom.PlayerCount == 1)
+        {
+            RandomPick();
+        }
+        else
+        {
+            pv.RPC("RandomPick", RpcTarget.AllBuffered);
+        }
+        Debug.Log("PickTheMap");
+    }
 
     [PunRPC]
     public void RandomPick()

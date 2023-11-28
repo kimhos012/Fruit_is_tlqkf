@@ -20,7 +20,7 @@ public class GameManager : MonoBehaviour
         Transform[] points = GameObject.Find("Spawnpoint").GetComponentsInChildren<Transform>();
         //StartCoroutine(Tanos());
         //Timer();
-        pv.RPC("Timer", RpcTarget.All);
+        pv.RPC("Timer", RpcTarget.AllBuffered);
     }
     IEnumerator Tanos()
     {

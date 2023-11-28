@@ -53,33 +53,33 @@ public class Attack : MonoBehaviour
         {
             case 0:
 
-                GrapeSkill();
-                pv.RPC("GrapeSkill", RpcTarget.Others);
+                //GrapeSkill();
+                pv.RPC("GrapeSkill", RpcTarget.AllBuffered);
                 break;
             case 1:
 
-                CherrySkill();
-                pv.RPC("CherrySkill", RpcTarget.Others);
+                //CherrySkill();
+                pv.RPC("CherrySkill", RpcTarget.AllBuffered);
                 break;
             case 2:
 
-                MandarinSkill();
-                pv.RPC("MandarinSkill", RpcTarget.Others);
+                //MandarinSkill();
+                pv.RPC("MandarinSkill", RpcTarget.AllBuffered);
                 break;
             case 3:
 
-                OnionSkill();
-                pv.RPC("OnionSkill", RpcTarget.Others);
+                //OnionSkill();
+                pv.RPC("OnionSkill", RpcTarget.AllBuffered);
                 break;
             case 4:
 
-                PepperSkill();
-                pv.RPC("PepperSkill", RpcTarget.Others);
+                //PepperSkill();
+                pv.RPC("PepperSkill", RpcTarget.AllBuffered);
                 break;
             case 5:
 
-                SweetpotatoSkill();
-                pv.RPC("SweetpotatoSkill", RpcTarget.Others);
+                //SweetpotatoSkill();
+                pv.RPC("SweetpotatoSkill", RpcTarget.AllBuffered);
                 break;
 
         }

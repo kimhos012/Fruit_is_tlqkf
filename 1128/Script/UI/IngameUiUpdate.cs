@@ -1,29 +1,27 @@
 using Photon.Pun;
+using Photon.Realtime;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class IngameUiUpdate : MonoBehaviour//, IPunObservable
+public class IngameUiUpdate : MonoBehaviour, IPunObservable
 {
     PhotonView pv;
 
     //Set Numb
-    //public int PlayerNumber;
+    public int PlayerNumber;
 
-    //SetPlayerNum2Color;
-    public GameObject[] uiNumber;
+    public Image playerHpPer;
+    public float hpPer;
 
-    Image[] playerHpPer;
-    float hpPer;
+    public Image playerCooldownPer;
+    public float cooldown;
 
-    Image[] playerCooldownPer;
-    float cooldown;
-
-    Text[] playerName;
+    public Text playerName;
     new string name;
 
-    Image[] playerSkillImage;
+    public Image playerSkillImage;
     public Sprite[] Img;
-    int playerChar;
+    public int playerChar;
 
     public GameObject CurrentPlayer;
 
@@ -32,24 +30,23 @@ public class IngameUiUpdate : MonoBehaviour//, IPunObservable
         pv = GetComponent<PhotonView>();
         //Connect UI Setting
 
-        for (int i = 0; i < uiNumber.Length; i++)
-        {
-            playerHpPer[i] = transform.GetChild(0).GetChild(0).GetComponent<Image>();
-            playerSkillImage[i] = transform.GetChild(1).GetComponent<Image>();
-            playerCooldownPer[i] = transform.GetChild(1).GetChild(0).GetComponent<Image>();
-            playerName[i] = transform.GetChild(2).GetChild(0).GetComponent<Text>();
-        }
+        playerHpPer = transform.GetChild(0).GetChild(0).GetComponent<Image>();
+        playerSkillImage = transform.GetChild(1).GetComponent<Image>();
+        playerCooldownPer = transform.GetChild(1).GetChild(0).GetComponent<Image>();
+        playerName = transform.GetChild(2).GetChild(0).GetComponent<Text>();
+
+
     }
     void GetPlayer()
     {
 
     }
 
-    void FixedUpdate()
+    void Update()
     {
         UpdateUI();
         //pv.RPC("UpdateUI", RpcTarget.AllBuffered);
-        //pv.RPC("UpdateUI", RpcTarget.All);
+        pv.RPC("UpdateUI", RpcTarget.Others);
     }
 
     [PunRPC]
@@ -63,34 +60,27 @@ public class IngameUiUpdate : MonoBehaviour//, IPunObservable
             PlayerData playerData = player.GetComponent<PlayerData>();
             int playerNum = playerData.playerNum;
 
-            hpPer = playerData.hpPer;
-            cooldown = playerData.CoolPer;
-            name = player.GetComponent<PhotonView>().Controller.NickName.ToString();
-            playerChar = playerData.charNum;
-
-            playerHpPer[playerNum].fillAmount = hpPer;
-            playerCooldownPer[playerNum].fillAmount = cooldown;
-            playerName[playerNum].text = name;
-            playerSkillImage[playerNum].sprite = Img[playerChar];
-
-            Debug.Log(playerData.playerNum+" "+"Name : " + name + " Health : " + hpPer);
-
+            if (playerNum == PlayerNumber)
+            {
+                CurrentPlayer = player;
+            }
         }
+        //SetUI
+        hpPer = CurrentPlayer.GetComponent<PlayerData>().hpPer;
+        cooldown = CurrentPlayer.GetComponent<PlayerData>().CoolPer;
+        name = CurrentPlayer.GetComponent<PhotonView>().Controller.NickName.ToString();
+        playerChar = CurrentPlayer.GetComponent<PlayerData>().charNum;
+
+        playerHpPer.fillAmount = hpPer;
+        playerCooldownPer.fillAmount = cooldown;
+        playerName.text = name;
+        playerSkillImage.sprite = Img[CurrentPlayer.GetComponent<PlayerData>().playerNum];
+
+        Debug.Log(CurrentPlayer.GetComponent<PlayerData>().playerNum + " " + "Name : " + name + " Health : " + hpPer);
     }
 
-    /*public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
-        if (stream.IsWriting)
-        {
-            stream.SendNext(hpPer);
-            stream.SendNext(cooldown);
-            stream.SendNext(name);
-        }
-        else
-        {
-            hpPer = (float)stream.ReceiveNext();
-            cooldown = (float)stream.ReceiveNext();
-            name = (string)stream.ReceiveNext();
-        }
-    }*/
+
+    }
 }
